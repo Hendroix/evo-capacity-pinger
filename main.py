@@ -61,7 +61,7 @@ def main():
         return printHelpMessage()
     
     gyms = getAllGyms()
-    if argumentIndex is not None and argumentName is not None:
+    if argumentIndex is None and argumentName is None:
         print('Please choose one of the following gyms to ping, either by Index, Name or Id')
         for num, gym in enumerate(gyms, start=1):
             print('{}: {} ({})'.format(num, gym['name'], gym['id']))
