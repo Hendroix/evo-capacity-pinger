@@ -32,7 +32,7 @@ def findSelectedGym(gyms, argumentIndex, argumentName):
     else:
         answer = input()
         
-    if answer.isnumeric():
+    if answer.isnumeric() and len(gyms) >= int(answer):
         return gyms[int(answer) - 1]
     else:
         answer = answer.lower()
@@ -43,7 +43,7 @@ def findSelectedGym(gyms, argumentIndex, argumentName):
             elif answer == gym['id'].lower():
                 return gym
     print('No gym found please try again.')
-    return findSelectedGym(gyms)
+    return findSelectedGym(gyms, None, None)
 
 def pingGym(gym, attempts):
     req = requests.get(capacityForURL.format(gym['id']))
