@@ -49,10 +49,16 @@ def pingGym(gym, attempts):
     req = requests.get(capacityForURL.format(gym['id']))
     if req.status_code == 200:
         response = json.loads(req.content)
-        print('{} - {}/{} - {}%'.format(attempts, response['current'], response['max_capacity'], response['percentageUsed']))
+        print('{} - {}/{} - {}%'.format(attempts, response['current'], response['max_capacity'], calculatePercenageCapacity(response['current'], response['max_capacity'])))
         attempts = attempts + 1
         time.sleep(15)
         pingGym(gym, attempts)
+
+def calculatePercenageCapacity(current_capacity, max_capacity):
+        curCap = int(current_capacity)
+        maxCap = int(max_capacity)
+        percentageCap = (curCap / maxCap) * 100
+        return round(percentageCap, 2);
     
 def main():
     argumentIndex = getArgument('-i')
