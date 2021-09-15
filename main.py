@@ -1,8 +1,10 @@
 import requests, json, sys, time
+from datetime import datetime
 
 locationURL = 'https://visits.evofitness.no/api/v1/locations?operator=5336003e-0105-4402-809f-93bf6498af34'
 capacityForURL = 'https://visits.evofitness.no/api/v1/locations/{}/current'
 attempts = 1
+responses = []
 
 def getArgument(argumentKey):
     args = sys.argv[1:]
@@ -49,7 +51,8 @@ def pingGym(gym, attempts):
     req = requests.get(capacityForURL.format(gym['id']))
     if req.status_code == 200:
         response = json.loads(req.content)
-        print('{} - {}/{} - {}%'.format(attempts, response['current'], response['max_capacity'], calculatePercenageCapacity(response['current'], response['max_capacity'])))
+        print('{} - {} - {}/{} - {}%{}'.format(attempts, datetime.now().strftime('%H:%M:%S'), response['current'], response['max_capacity'], calculatePercenageCapacity(response['current'], response['max_capacity']), calculateDiff(response)))
+        responses.append(response)
         attempts = attempts + 1
         time.sleep(15)
         pingGym(gym, attempts)
@@ -57,9 +60,21 @@ def pingGym(gym, attempts):
 def calculatePercenageCapacity(current_capacity, max_capacity):
         curCap = int(current_capacity)
         maxCap = int(max_capacity)
-        percentageCap = (curCap / maxCap) * 100
+        percentageCap = (curCap / maxCap) * 10
         return round(percentageCap, 2);
     
+def calculateDiff(response):
+    if len(responses) > 0:
+        prevResponse = responses[len(responses) - 1]
+        if int(response['current']) > prevResponse['current']:
+            return ' (+)'
+        elif int(response['current']) < prevResponse['current']:
+            return ' (-)'
+        else:
+            return ''
+    else:
+        return ''
+
 def main():
     argumentIndex = getArgument('-i')
     argumentName = getArgument('-n')
